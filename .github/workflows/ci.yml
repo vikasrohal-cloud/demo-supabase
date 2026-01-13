@@ -1,0 +1,32 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  test-supabase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase local development setup
+        run: supabase db start
+      
+      - name: Lint database schema
+        run: supabase db lint
+        
+      - name: Verify generated types are checked in
+        run: |
+          # Generate types from the local database and compare with committed files
+          supabase gen types typescript --local > types.gen.ts
+          if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+            echo "Detected uncommitted changes after build. Run 'supabase gen types typescript --local > types.gen.ts' and commit the changes."
+            git diff
+            exit 1
+          fi
