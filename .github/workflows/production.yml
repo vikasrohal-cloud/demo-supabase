@@ -3,7 +3,7 @@ name: Deploy Production Migrations
 on:
   push:
     branches:
-      - main # Or your production branch name
+      - main 
   workflow_dispatch:
 
 jobs:
@@ -20,8 +20,8 @@ jobs:
         # Set environment variables for the CLI to connect to the production project
         env:
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          PROJECT_ID: kuufrptgajseeedhgoce
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           
-      - run: supabase link --project-ref $SUPABASE_PROJECT_REF
+      - run: supabase link --project-ref $PROJECT_ID
       - run: supabase db push 
